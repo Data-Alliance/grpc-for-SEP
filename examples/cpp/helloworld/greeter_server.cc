@@ -34,6 +34,8 @@ using grpc::ServerContext;
 using grpc::Status;
 using helloworld::HelloRequest;
 using helloworld::HelloReply;
+using helloworld::CreateKeyWalletRequest;
+using helloworld::CreateKeyWalletReply;
 using helloworld::Greeter;
 
 // Logic and data behind the server's behavior.
@@ -42,6 +44,13 @@ class GreeterServiceImpl final : public Greeter::Service {
                   HelloReply* reply) override {
     std::string prefix("Hello ");
     reply->set_message(prefix + request->name());
+    return Status::OK;
+  }
+
+  Status CreateKeyWallet(ServerContext* context, const CreateKeyWalletRequest* request,
+		  CreateKeyWalletReply* reply) override {
+    std::string prefix("Hello again ");
+    reply->set_privatekey(prefix + request->password());
     return Status::OK;
   }
 };

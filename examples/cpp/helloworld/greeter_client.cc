@@ -33,6 +33,8 @@ using grpc::ClientContext;
 using grpc::Status;
 using helloworld::HelloRequest;
 using helloworld::HelloReply;
+using helloworld::CreateKeyWalletRequest;
+using helloworld::CreateKeyWalletReply;
 using helloworld::Greeter;
 
 class GreeterClient {
@@ -67,6 +69,26 @@ class GreeterClient {
     }
   }
 
+  std::string SayHelloAgain(const std::string& user) {
+    CreateKeyWalletRequest request;
+    request.set_password(user);
+    CreateKeyWalletReply reply;
+    ClientContext context;
+
+    // The actual RPC.
+    Status status = stub_->CreateKeyWallet(&context, request, &reply);
+
+    // Act upon its status.
+    if (status.ok()) {
+      std::cout << " kng " << reply.privatekey();
+      return reply.privatekey();
+    } else {
+      std::cout << status.error_code() << ": " << status.error_message()
+                << std::endl;
+      return "RPC failed";
+    }
+  }
+
  private:
   std::unique_ptr<Greeter::Stub> stub_;
 };
@@ -80,6 +102,9 @@ int main(int argc, char** argv) {
       "localhost:50051", grpc::InsecureChannelCredentials()));
   std::string user("world");
   std::string reply = greeter.SayHello(user);
+  std::cout << "Greeter received: " << reply << std::endl;
+
+  reply = greeter.SayHelloAgain(user);
   std::cout << "Greeter received: " << reply << std::endl;
 
   return 0;
